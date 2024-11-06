@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';  // Adjust the path if needed
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -17,17 +17,14 @@ function SignUp() {
     e.preventDefault();
 
     try {
-      // Check if the email is in the authorizedAdmins collection
-      const adminDoc = await getDoc(doc(db, 'authorizedAdmins', email));
-      
-      // Set role based on userType selection and authorizedAdmins collection
-      const role = adminDoc.exists() ? 'admin' : userType.toLowerCase();
-      
       // Create the user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Save the user's details in Firestore
+      // Determine role based on userType selection
+      const role = "user" // Set role as 'student', 'faculty', or 'other'
+
+      // Save the user's details in the 'users' collection
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         name,
@@ -40,6 +37,7 @@ function SignUp() {
       // Redirect to login page after successful sign-up
       navigate('/');
     } catch (error) {
+      console.error("Sign-up error:", error);  // Log error to console
       alert(`Sign-Up failed: ${error.message}`);
     }
   };
