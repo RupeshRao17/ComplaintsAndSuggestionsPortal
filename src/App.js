@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from './firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import Login from './Login';
+import StudentDashboard from './components/StudentDashboard';
+import AdminDashboard from './components/AdminDashboard';
+import SignUp from './components/SignUp';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Set up a listener for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);  // Update user state when login or signup occurs
+    });
+
+    return () => unsubscribe();  // Clean up the listener on component unmount
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={user ? <Login /> : <SignUp />} />
+        <Route path="/dashboard" element={<StudentDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </Router>
   );
 }
 
