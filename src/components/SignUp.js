@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../firebaseConfig';  // Adjust the path if needed
+import { db, auth } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [department, setDepartment] = useState('');
+  const [userType, setUserType] = useState('Student');
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -15,27 +19,26 @@ function SignUp() {
     try {
       // Check if the email is in the authorizedAdmins collection
       const adminDoc = await getDoc(doc(db, 'authorizedAdmins', email));
-  
-      // Set role based on whether the email is in the authorizedAdmins collection
-      const role = adminDoc.exists() ? 'admin' : 'student';
-  
+      
+      // Set role based on userType selection and authorizedAdmins collection
+      const role = adminDoc.exists() ? 'admin' : userType.toLowerCase();
+      
       // Create the user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
-      // Save the user's role in Firestore
+
+      // Save the user's details in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
+        name,
+        contactNumber,
+        department,
+        userType: userType,
         role: role
       });
-  
-      // Navigate to the appropriate dashboard based on the role
-      navigate(role === 'student' ? '/dashboard' : '/admin', {
-        state: {
-          userName: email,
-          role: role === 'student' ? 'Student' : 'Admin'
-        }
-      });
+
+      // Redirect to login page after successful sign-up
+      navigate('/');
     } catch (error) {
       alert(`Sign-Up failed: ${error.message}`);
     }
@@ -45,6 +48,41 @@ function SignUp() {
     <div className="sign-up">
       <h2>Sign Up</h2>
       <form onSubmit={handleSignUp}>
+        <label>Name</label>
+        <input 
+          type="text" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          required 
+        />
+
+        <label>Contact Number</label>
+        <input 
+          type="text" 
+          value={contactNumber} 
+          onChange={(e) => setContactNumber(e.target.value)} 
+          required 
+        />
+
+        <label>Department</label>
+        <input 
+          type="text" 
+          value={department} 
+          onChange={(e) => setDepartment(e.target.value)} 
+          required 
+        />
+
+        <label>User Type</label>
+        <select 
+          value={userType} 
+          onChange={(e) => setUserType(e.target.value)} 
+          required
+        >
+          <option value="Student">Student</option>
+          <option value="Faculty">Faculty</option>
+          <option value="Other">Other</option>
+        </select>
+
         <label>Email</label>
         <input 
           type="email" 
