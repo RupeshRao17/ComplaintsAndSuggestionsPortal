@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebaseConfig'; // Ensure db is imported for Firestore access
 import './App.css';
 import collegeLogo from './logo_campus.png';
 import StudentDashboard from './components/StudentDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SignUp from './components/SignUp';
 
-// Login component
 function Login() {
   const [isStudent, setIsStudent] = useState(true);
   const [email, setEmail] = useState('');
@@ -23,6 +23,7 @@ function Login() {
       const user = userCredential.user;
 
       if (isStudent) {
+        // Navigate to student dashboard
         navigate('/dashboard', {
           state: {
             studentName: user.email,
@@ -30,12 +31,21 @@ function Login() {
           }
         });
       } else {
-        navigate('/admin', {
-          state: {
-            adminName: user.email,
-            role: "Administrator"
-          }
-        });
+        // Check if the user is an admin
+        const adminDocRef = doc(db, 'authorizedAdmins', email);
+        const adminDoc = await getDoc(adminDocRef);
+
+        if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+          // If user has an admin role, navigate to admin dashboard
+          navigate('/admin', {
+            state: {
+              adminName: user.email,
+              role: "Administrator"
+            }
+          });
+        } else {
+          alert("Access denied: You do not have admin privileges.");
+        }
       }
     } catch (error) {
       alert(`Login failed: ${error.message}`);
