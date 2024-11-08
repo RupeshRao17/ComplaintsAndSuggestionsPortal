@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './AdminDashboard.css';
-import collegeLogo from './logo_campus.png'; // Update path to your logo
+import collegeLogo from './logo_campus.png';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+// Register the necessary components from Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -11,7 +16,7 @@ const AdminDashboard = () => {
     {
       title: "Network Issue",
       description: "Wi-Fi not working in Lab 3",
-      role: "Technical",
+      role: "Faculty",
       userName: "John Doe",
       category: "Infrastructure",
       priority: "High",
@@ -20,7 +25,7 @@ const AdminDashboard = () => {
     {
       title: "Maintenance",
       description: "Classroom projector needs maintenance in Room 302.",
-      role: "Technical",
+      role: "Student",
       userName: "Mayur Joshi",
       category: "Infrastructure",
       priority: "High",
@@ -31,14 +36,76 @@ const AdminDashboard = () => {
 
   const [filters, setFilters] = useState({
     status: 'all',
-    category: 'all'
+    category: 'all',
+    role: 'all',
+    priority: 'all'
   });
+
+  const resetFilters = () => {
+    setFilters({
+      status: 'all',
+      category: 'all',
+      role: 'all',
+      priority: 'all'
+    });
+  };
 
   const filteredComplaints = complaints.filter(complaint => {
     const statusMatch = filters.status === 'all' || complaint.status.toLowerCase() === filters.status;
     const categoryMatch = filters.category === 'all' || complaint.category.toLowerCase() === filters.category;
-    return statusMatch && categoryMatch;
+    const roleMatch = filters.role === 'all' || complaint.role.toLowerCase() === filters.role;
+    const priorityMatch = filters.priority === 'all' || complaint.priority.toLowerCase() === filters.priority;
+    return statusMatch && categoryMatch && roleMatch && priorityMatch;
   });
+
+  // Prepare data for pie charts
+  const resolvedComplaints = complaints.filter(c => c.status === 'Resolved').length;
+  const unresolvedComplaints = complaints.filter(c => c.status === 'Unresolved').length;
+
+  const complaintsByRole = complaints.reduce((acc, complaint) => {
+    if (complaint.role === 'Student') acc.student++;
+    if (complaint.role === 'Faculty') acc.faculty++;
+    return acc;
+  }, { student: 0, faculty: 0 });
+
+  const unresolvedComplaintsByRole = complaints
+    .filter(complaint => complaint.status === 'Unresolved') // Filter unresolved complaints
+    .reduce((acc, complaint) => {
+      if (complaint.role === 'Student') acc.student++;
+      if (complaint.role === 'Faculty') acc.faculty++;
+      return acc;
+    }, { student: 0, faculty: 0 });
+  
+  const statusData = {
+    labels: ['Resolved', 'Unresolved'],
+    datasets: [
+      {
+        data: [resolvedComplaints, unresolvedComplaints],
+        backgroundColor: ['#059669', '#dc2626'],
+      },
+    ],
+  };
+
+  const unresolvedRoleData = {
+    labels: ['Student', 'Faculty'],
+    datasets: [
+      {
+        data: [unresolvedComplaintsByRole.student, unresolvedComplaintsByRole.faculty],
+        backgroundColor: ['#2563eb', '#fbbf24'],
+      },
+    ],
+  };
+  
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,  // Disable the default legend
+    },
+  },
+};
+
+
 
   return (
     <div className="admin-dashboard">
@@ -61,13 +128,13 @@ const AdminDashboard = () => {
           <div className="info-card">
             <h3>Resolved</h3>
             <div className="number" style={{ color: '#059669' }}>
-              {complaints.filter(c => c.status === 'Resolved').length}
+              {resolvedComplaints}
             </div>
           </div>
           <div className="info-card">
             <h3>Pending</h3>
             <div className="number" style={{ color: '#dc2626' }}>
-              {complaints.filter(c => c.status === 'Unresolved').length}
+              {unresolvedComplaints}
             </div>
           </div>
         </section>
@@ -99,25 +166,63 @@ const AdminDashboard = () => {
                   <option value="administrative">Administrative</option>
                 </select>
               </div>
+              <div className="filter-group">
+                <label>Role</label>
+                <select 
+                  value={filters.role}
+                  onChange={(e) => setFilters({...filters, role: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="others">Others</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Priority</label>
+                <select 
+                  value={filters.priority}
+                  onChange={(e) => setFilters({...filters, priority: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div className="reset-container">
+              <button className="reset-button" onClick={resetFilters}>Reset Filters</button>
             </div>
           </div>
 
-          <div className="card small-card">
-            <h2>Reports & Analytics</h2>
-            <div className="analytics-grid">
-              <div className="analytics-card">
-                <h3>Resolved Complaints</h3>
-                <div className="number" style={{ color: '#059669' }}>
-                  {((complaints.filter(c => c.status === 'Resolved').length / complaints.length) * 100).toFixed(0)}%
-                </div>
-              </div>
-              <div className="analytics-card">
-                <h3>Average Response Time</h3>
-                <div className="number" style={{ color: '#2563eb' }}>24h</div>
-              </div>
-            </div>
+      <div className="card small-card">
+      <h2>Reports & Analytics</h2>
+      <div className="analytics-grid">
+        <div className="analytics-card pie-card">
+          <h3>Resolved vs Unresolved</h3>
+          <div className="chart-container">
+            <Pie data={statusData} options={options} />
+          </div>
+          <div className="legend-container">
+            <span style={{ color: '#059669' }}>Resolved</span>
+            <span style={{ color: '#dc2626' }}>Unresolved</span>
           </div>
         </div>
+
+        <div className="analytics-card pie-card">
+          <h3>Unresolved Complaints by Role</h3>
+          <div className="chart-container">
+            <Pie data={unresolvedRoleData} options={options} />
+          </div>
+          <div className="legend-container">
+            <span style={{ color: '#2563eb' }}>Student</span>
+            <span style={{ color: '#fbbf24' }}>Faculty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
         <div className="card">
           <h2>Complaints</h2>
@@ -159,6 +264,6 @@ const AdminDashboard = () => {
       </div>
     </div>
   );
-};
+}
 
 export default AdminDashboard;

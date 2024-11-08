@@ -59,7 +59,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  flex: 1; /* Allows complaints section to take up more space */
+  flex: 1;
 }
 
 .right-section {
@@ -68,18 +68,42 @@
   flex: 1;
 }
 
-/* Adjust for 50-50 split */
 .small-card {
   flex: 1;
   padding: 10px;
 }
 
-/* Compact filter and analytics sections */
+/* Filter and Analytics sections */
 .filters-section,
 .analytics-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.filters-section {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.filter-group {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.filter-group select {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .analytics-card {
@@ -102,25 +126,23 @@
   color: #333;
 }
 
+/* Complaints Table */
 .complaints-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 .complaints-table th,
 .complaints-table td {
-  padding: 12px;
+  padding: 10px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border: 1px solid #ddd;
 }
 
 .complaints-table th {
-  background: #f8f9fa;
-  color: #666;
-  font-weight: 600;
-  font-size: 14px;
-}
-
+  background-color: #f4f4f4;
+} 
 /* Status badges */
 .status-badge {
   padding: 4px 8px;
@@ -150,4 +172,71 @@
 
 .priority-low {
   color: #059669;
+}
+
+/* Reset button container styling for alignment */
+.reset-container {
+  display: flex;
+  justify-content: flex-end; /* Aligns the reset button to the right */
+  margin-top: 10px;
+}
+
+/* Reset button styling */
+.reset-button {
+  background-color:rgb(190, 190, 190);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 30%;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-left: auto;
+}
+
+.reset-button:hover {
+  background-color: rgb(100, 100, 100);
+}
+.analytics-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.pie-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 48%; /* To make sure the cards are side by side */
+}
+
+.analytics-card.pie-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: row; /* Changed from column to row */
+  align-items: center;
+  gap: 20px; /* Space between chart and legend */
+}
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px; /* Adjust this size as needed */
+  height: 150px;
+}
+.legend-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: 20px;
+}
+
+.legend-container span {
+  font-size: 14px;
+  color: #333;
+  margin: 5px 0;
 }
