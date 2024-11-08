@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { db, auth } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../firebaseConfig';  // Adjust the path if needed
-import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
+import collegeLogo from './logo_campus.png';
+import './SignUp.css';
+
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -11,94 +14,139 @@ function SignUp() {
   const [contactNumber, setContactNumber] = useState('');
   const [department, setDepartment] = useState('');
   const [userType, setUserType] = useState('Student');
+  const [error, setError] = useState(null);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     try {
-      // Create the user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Determine role based on userType selection
-      const role = "user" // Set role as 'student', 'faculty', or 'other'
-
-      // Save the user's details in the 'users' collection
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         name,
         contactNumber,
         department,
-        userType: userType,
-        role: role
+        userType,
+        role: 'user'
       });
 
-      // Redirect to login page after successful sign-up
       navigate('/');
     } catch (error) {
-      console.error("Sign-up error:", error);  // Log error to console
+      console.error("Sign-up error:", error);
       alert(`Sign-Up failed: ${error.message}`);
     }
   };
 
   return (
-    <div className="sign-up">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignUp}>
-        <label>Name</label>
-        <input 
-          type="text" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          required 
-        />
+    <div className="App">
+      <header className="header">
+        <img src={collegeLogo} alt="College Logo" className="logo" />
+        <h1>Bharati Vidyapeeth (Deemed to be university)</h1>
+      </header>
+      <div className="login-section">
+        <h2>Sign Up</h2>
+        {error && <div className="error-message">{error}</div>}
+        <form className="login-form" onSubmit={handleSignUp}>
+          <div className="form-group">
+            <label>Name</label>
+            <input
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
-        <label>Contact Number</label>
-        <input 
-          type="text" 
-          value={contactNumber} 
-          onChange={(e) => setContactNumber(e.target.value)} 
-          required 
-        />
+          <div className="form-group">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              placeholder="Enter your contact no"
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+              required
+              maxLength="10"
+              pattern="\d{10}"
+            />
+          </div>
 
-        <label>Department</label>
-        <input 
-          type="text" 
-          value={department} 
-          onChange={(e) => setDepartment(e.target.value)} 
-          required 
-        />
+          <div className="form-group department">
+            <label>Department</label>
+            <div className="dropdown-container">
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                required
+                className="dropdown"
+              >
+                <option value="BCA">BCA</option>
+                <option value="BBA">BBA</option>
+                <option value="MCA">MCA</option>
+                <option value="MBA">MBA</option>
+              </select>
+            </div>
+          </div>
 
-        <label>User Type</label>
-        <select 
-          value={userType} 
-          onChange={(e) => setUserType(e.target.value)} 
-          required
-        >
-          <option value="Student">Student</option>
-          <option value="Faculty">Faculty</option>
-          <option value="Other">Other</option>
-        </select>
+          <div className="form-group user-type">
+            <label>User Type</label>
+            <div className="dropdown-container">
+              <select
+                value={userType}
+                onChange={(e) => setUserType(e.target.value)}
+                required
+                className="dropdown"
+              >
+                <option value="Student">Student</option>
+                <option value="Faculty">Faculty</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
 
-        <label>Email</label>
-        <input 
-          type="email" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
-          required 
-        />
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <label>Password</label>
-        <input 
-          type="password" 
-          value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
-          required 
-        />
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setShowPasswordRequirements(true)}
+              onBlur={() => setShowPasswordRequirements(false)}
+              required
+              minLength="8"
+            />
+            {showPasswordRequirements && (
+              <ul className="password-requirements">
+                <li>Password must contain an upper case character</li>
+                <li>Password must contain a numeric character</li>
+                <li>Password must contain a non-alphanumeric character</li>
+              </ul>
+            )}
+          </div>
 
-        <button type="submit">Sign Up</button>
-      </form>
+          <button type="submit">Sign Up</button>
+        </form>
+
+        <div className="sign-up-link">
+          Already have an account? <Link to="/">Sign In</Link>
+        </div>
+      </div>
     </div>
   );
 }
