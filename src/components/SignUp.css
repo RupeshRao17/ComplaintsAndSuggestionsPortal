@@ -1,4 +1,4 @@
-/* Copied from signing.css */
+/* General styling for the app */
 .App {
     display: flex;
     flex-direction: column;
@@ -17,8 +17,8 @@
     border-bottom: 2px solid rgb(255, 208, 0);
     width: 100%;
     background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
 }
 
 .logo {
@@ -85,6 +85,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .login-form button:hover {
@@ -110,52 +111,67 @@
 }
 
 /* Department and User Type dropdown style */
-.form-group.department {
+.form-group.department, .form-group.user-type {
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Stack elements vertically */
     margin-bottom: 15px;
 }
 
-.form-group.department label {
-    margin-right: 20px;
+.form-group.department label, .form-group.user-type label {
+    margin-bottom: 7px; /* Space between label and dropdown */
     font-size: 16px;
     font-weight: bold;
+    color: #333;
 }
 
 .dropdown-container {
-    flex-grow: 1;
+    position: relative;
+    width: 100%;
 }
 
 .dropdown {
     width: 100%;
     padding: 10px;
-    font-size: 13px;
-    border: 1px solid grey;
+    font-size: 12px;
+    border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #fff;
-    color: black;
+    color: #333;
     outline: none;
     box-sizing: border-box;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Custom dropdown arrow */
+.dropdown-container::after {
+    content: '▼';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: #000057;
+    pointer-events: none;
+}
+
+/* Focus and hover state for the dropdown */
 .dropdown:focus {
-    border-color: #007bff;
+    border-color: #000057;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* User Type dropdown should be aligned similarly */
-.form-group.user-type {
-    display: flex;
-    align-items: center;
+/* Hover state for the dropdown */
+.dropdown:hover {
+    border-color: #000057;
 }
 
-.form-group.user-type label {
-    margin-right: 10px;
-}
-
+/* Password requirements list */
 .password-requirements {
     text-align: left;
-    font-size: 0.7em;
+    font-size: 0.8em;
     color: red;
     margin-top: 5px;
     list-style-type: disc;

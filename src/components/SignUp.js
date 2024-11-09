@@ -6,14 +6,13 @@ import { setDoc, doc } from 'firebase/firestore';
 import collegeLogo from './logo_campus.png';
 import './SignUp.css';
 
-
 function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [department, setDepartment] = useState('');
-  const [userType, setUserType] = useState('Student');
+  const [userType, setUserType] = useState('');
   const [error, setError] = useState(null);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const navigate = useNavigate();
@@ -31,7 +30,7 @@ function SignUp() {
         contactNumber,
         department,
         userType,
-        role: 'user'
+        role: 'user',
       });
 
       navigate('/');
@@ -47,10 +46,14 @@ function SignUp() {
         <img src={collegeLogo} alt="College Logo" className="logo" />
         <h1>Bharati Vidyapeeth (Deemed to be university)</h1>
       </header>
+
       <div className="login-section">
         <h2>Sign Up</h2>
+
         {error && <div className="error-message">{error}</div>}
+
         <form className="login-form" onSubmit={handleSignUp}>
+          {/* Name input */}
           <div className="form-group">
             <label>Name</label>
             <input
@@ -62,6 +65,7 @@ function SignUp() {
             />
           </div>
 
+          {/* Contact Number input */}
           <div className="form-group">
             <label>Contact Number</label>
             <input
@@ -75,6 +79,7 @@ function SignUp() {
             />
           </div>
 
+          {/* Department dropdown */}
           <div className="form-group department">
             <label>Department</label>
             <div className="dropdown-container">
@@ -84,6 +89,7 @@ function SignUp() {
                 required
                 className="dropdown"
               >
+                <option value="">Select Department</option>
                 <option value="BCA">BCA</option>
                 <option value="BBA">BBA</option>
                 <option value="MCA">MCA</option>
@@ -92,6 +98,7 @@ function SignUp() {
             </div>
           </div>
 
+          {/* User Type dropdown */}
           <div className="form-group user-type">
             <label>User Type</label>
             <div className="dropdown-container">
@@ -101,6 +108,7 @@ function SignUp() {
                 required
                 className="dropdown"
               >
+                <option value="">Select User Type</option>
                 <option value="Student">Student</option>
                 <option value="Faculty">Faculty</option>
                 <option value="Other">Other</option>
@@ -108,6 +116,7 @@ function SignUp() {
             </div>
           </div>
 
+          {/* Email input */}
           <div className="form-group">
             <label>Email</label>
             <input
@@ -119,6 +128,7 @@ function SignUp() {
             />
           </div>
 
+          {/* Password input */}
           <div className="form-group">
             <label>Password</label>
             <input
@@ -140,11 +150,13 @@ function SignUp() {
             )}
           </div>
 
+          {/* Submit button */}
           <button type="submit">Sign Up</button>
         </form>
 
+        {/* Sign In link */}
         <div className="sign-up-link">
-          Already have an account? <Link to="/">Sign In</Link>
+          Already have an account? <Link to="/login">Sign In</Link>
         </div>
       </div>
     </div>
@@ -152,3 +164,4 @@ function SignUp() {
 }
 
 export default SignUp;
+  
