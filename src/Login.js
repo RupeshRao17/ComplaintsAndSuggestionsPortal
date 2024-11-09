@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from './firebaseConfig'; // Ensure db is imported for Firestore access
+import { auth, db } from './firebaseConfig';
 import './App.css';
 import collegeLogo from './logo_campus.png';
 import StudentDashboard from './components/StudentDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SignUp from './components/SignUp';
+import Modal from './components/Modal'; // Import Modal
 
 function Login() {
   const [isStudent, setIsStudent] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [modalMessage, setModalMessage] = useState(''); // State for modal message
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,7 +25,6 @@ function Login() {
       const user = userCredential.user;
 
       if (isStudent) {
-        // Navigate to student dashboard
         navigate('/dashboard', {
           state: {
             studentName: user.email,
@@ -31,12 +32,10 @@ function Login() {
           }
         });
       } else {
-        // Check if the user is an admin
         const adminDocRef = doc(db, 'authorizedAdmins', email);
         const adminDoc = await getDoc(adminDocRef);
 
         if (adminDoc.exists() && adminDoc.data().role === 'admin') {
-          // If user has an admin role, navigate to admin dashboard
           navigate('/admin', {
             state: {
               adminName: user.email,
@@ -44,11 +43,11 @@ function Login() {
             }
           });
         } else {
-          alert("Access denied: You do not have admin privileges.");
+          setModalMessage("Access denied: You do not have admin privileges.");
         }
       }
     } catch (error) {
-      alert(`Login failed: ${error.message}`);
+      setModalMessage(`Login failed: ${error.message}`);
     }
   };
 
@@ -98,6 +97,9 @@ function Login() {
           <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
         </div>
       </div>
+
+      {/* Render Modal if modalMessage is not empty */}
+      {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage('')} />}
     </div>
   );
 }

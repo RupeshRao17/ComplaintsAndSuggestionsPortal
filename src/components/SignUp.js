@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import collegeLogo from './logo_campus.png';
 import './SignUp.css';
+import Modal from './Modal'; // Import the Modal component
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ function SignUp() {
   const [contactNumber, setContactNumber] = useState('');
   const [department, setDepartment] = useState('');
   const [userType, setUserType] = useState('');
-  const [error, setError] = useState(null);
+  const [modalMessage, setModalMessage] = useState(''); // State for modal message
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ function SignUp() {
       navigate('/');
     } catch (error) {
       console.error("Sign-up error:", error);
-      alert(`Sign-Up failed: ${error.message}`);
+      setModalMessage(`Sign-Up failed: ${error.message}`);
     }
   };
 
@@ -49,8 +50,6 @@ function SignUp() {
 
       <div className="login-section">
         <h2>Sign Up</h2>
-
-        {error && <div className="error-message">{error}</div>}
 
         <form className="login-form" onSubmit={handleSignUp}>
           {/* Name input */}
@@ -159,9 +158,11 @@ function SignUp() {
           Already have an account? <Link to="/login">Sign In</Link>
         </div>
       </div>
+
+      {/* Render Modal if modalMessage is not empty */}
+      {modalMessage && <Modal message={modalMessage} onClose={() => setModalMessage('')} />}
     </div>
   );
 }
 
 export default SignUp;
-  
