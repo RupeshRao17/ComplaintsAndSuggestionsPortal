@@ -6,9 +6,6 @@ import { addDoc, collection } from 'firebase/firestore';
 import collegeLogo from './logo_campus.png'; // Logo path
 import Modal from './Modal'; // Import the Modal component
 
-
-//check
-
 const RegisterComplaint = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
@@ -19,6 +16,7 @@ const RegisterComplaint = () => {
   const [complaintTitle, setComplaintTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [priority, setPriority] = useState('');
   const [agreement, setAgreement] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -57,6 +55,7 @@ const RegisterComplaint = () => {
         complaintTitle,
         description,
         category,
+        priority,  // Include the priority here
         status: 'Pending',
         createdAt: new Date(),
       });
@@ -179,6 +178,19 @@ const RegisterComplaint = () => {
                 <option value="IT Support">IT Support</option>
                 <option value="Facilities">Facilities</option>
                 <option value="Academics">Academics</option>
+              </select>
+            </label>
+            <label>
+              Priority:
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                required
+              >
+                <option value="">Select Priority</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
               </select>
             </label>
           </fieldset>
