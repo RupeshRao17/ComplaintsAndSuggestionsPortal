@@ -55,8 +55,8 @@ const RegisterComplaint = () => {
         complaintTitle,
         description,
         category,
-        priority,  // Include the priority here
-        status: 'Pending',
+        priority,
+        status: 'Unresolved',
         createdAt: new Date(),
       });
       setModalMessage("Complaint registered successfully!");
@@ -83,13 +83,13 @@ const RegisterComplaint = () => {
   return (
     <div className="register-complaint-page">
       {/* Header */}
-      <header className="header">
-        <img src={collegeLogo} alt="College Logo" className="logo" />
+      <header className="register-complaint-header">
+        <img src={collegeLogo} alt="College Logo" className="register-complaint-logo" />
         <h1>Bharati Vidyapeeth (Deemed to be University)</h1>
       </header>
 
       {/* Sidebar Navigation */}
-      <aside className="sidebar">
+      <aside className="register-complaint-sidebar">
         <Link to="/dashboard" className="nav-link">Dashboard</Link>
         <Link to="/register-complaint" className="nav-link active">Make a Complaint</Link>
         <Link to="#track-complaint" className="nav-link">Track Your Complaint</Link>
@@ -97,9 +97,9 @@ const RegisterComplaint = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="register-complaint-container">
+      <main className="register-complaint-main-content">
         <h2>Register a Complaint</h2>
-        <form onSubmit={handleSubmit} className="complaint-form">
+        <form onSubmit={handleSubmit} className="register-complaint-form">
           <fieldset>
             <legend>Personal Information</legend>
             <label>
@@ -195,7 +195,7 @@ const RegisterComplaint = () => {
             </label>
           </fieldset>
 
-          <label className="agreement-label">
+          <label className="register-complaint-agreement-label">
             <input
               type="checkbox"
               checked={agreement}
