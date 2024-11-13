@@ -1,54 +1,53 @@
 .register-complaint-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    font-size: 1.75rem;
-    color: #000080;
-    margin-bottom: 1rem;
-  }
-  
-  .complaint-form label {
-    display: block;
-    font-weight: 600;
-    margin: 1rem 0 0.5rem;
-    color: #333;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  textarea,
-  select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  textarea {
-    height: 100px;
-  }
-  
-  button {
-    background-color: #000080;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-  
-  button:disabled {
-    background-color: #bbb;
-    cursor: not-allowed;
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 1.75rem;
+  color: #000080;
+  margin-bottom: 1rem;
+}
+
+.complaint-form label {
+  display: block;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+textarea {
+  height: 100px;
+}
+
+button {
+  background-color: #000080;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
