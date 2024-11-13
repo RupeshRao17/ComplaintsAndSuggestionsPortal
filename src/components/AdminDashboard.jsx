@@ -28,7 +28,7 @@ const AdminDashboard = () => {
       role: "Student",
       userName: "Mayur Joshi",
       category: "Infrastructure",
-      priority: "High",
+      priority: "Medium",
       status: "Unresolved"
     },
     // Additional sample complaints can go here
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
   }, { student: 0, faculty: 0 });
 
   const unresolvedComplaintsByRole = complaints
-    .filter(complaint => complaint.status === 'Unresolved') // Filter unresolved complaints
+    .filter(complaint => complaint.status === 'Unresolved')
     .reduce((acc, complaint) => {
       if (complaint.role === 'Student') acc.student++;
       if (complaint.role === 'Faculty') acc.faculty++;
@@ -96,16 +96,14 @@ const AdminDashboard = () => {
     ],
   };
   
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,  // Disable the default legend
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
     },
-  },
-};
-
-
+  };
 
   return (
     <div className="admin-dashboard">
@@ -146,6 +144,7 @@ const options = {
               <div className="filter-group">
                 <label>Status</label>
                 <select 
+                  className="dropdown"
                   value={filters.status}
                   onChange={(e) => setFilters({...filters, status: e.target.value})}
                 >
@@ -157,6 +156,7 @@ const options = {
               <div className="filter-group">
                 <label>Category</label>
                 <select 
+                  className="dropdown"
                   value={filters.category}
                   onChange={(e) => setFilters({...filters, category: e.target.value})}
                 >
@@ -169,6 +169,7 @@ const options = {
               <div className="filter-group">
                 <label>Role</label>
                 <select 
+                  className="dropdown"
                   value={filters.role}
                   onChange={(e) => setFilters({...filters, role: e.target.value})}
                 >
@@ -181,6 +182,7 @@ const options = {
               <div className="filter-group">
                 <label>Priority</label>
                 <select 
+                  className="dropdown"
                   value={filters.priority}
                   onChange={(e) => setFilters({...filters, priority: e.target.value})}
                 >
@@ -196,65 +198,62 @@ const options = {
             </div>
           </div>
 
-      <div className="card small-card">
-      <h2>Reports & Analytics</h2>
-      <div className="analytics-grid">
-        <div className="analytics-card pie-card">
-          <h3>Resolved vs Unresolved</h3>
-          <div className="chart-container">
-            <Pie data={statusData} options={options} />
-          </div>
-          <div className="legend-container">
-            <span style={{ color: '#059669' }}>Resolved</span>
-            <span style={{ color: '#dc2626' }}>Unresolved</span>
+          <div className="card small-card">
+            <h2>Reports & Analytics</h2>
+            <div className="analytics-grid">
+              <div className="analytics-card pie-card">
+                <h3>Resolved vs Unresolved</h3>
+                <div className="chart-container">
+                  <Pie data={statusData} options={options} />
+                </div>
+                <div className="legend-container">
+                  <span style={{ color: '#059669' }}>Resolved</span>
+                  <span style={{ color: '#dc2626' }}>Unresolved</span>
+                </div>
+              </div>
+
+              <div className="analytics-card pie-card">
+                <h3>Unresolved Complaints by Role</h3>
+                <div className="chart-container">
+                  <Pie data={unresolvedRoleData} options={options} />
+                </div>
+                <div className="legend-container">
+                  <span style={{ color: '#2563eb' }}>Student</span>
+                  <span style={{ color: '#fbbf24' }}>Faculty</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="analytics-card pie-card">
-          <h3>Unresolved Complaints by Role</h3>
-          <div className="chart-container">
-            <Pie data={unresolvedRoleData} options={options} />
-          </div>
-          <div className="legend-container">
-            <span style={{ color: '#2563eb' }}>Student</span>
-            <span style={{ color: '#fbbf24' }}>Faculty</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-        <div className="card">
-          <h2>Complaints</h2>
+        <div className="complaints-section">
+          <h2 className="section-title">Complaints</h2>
           <table className="complaints-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Role</th>
-                <th>User Name</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Status</th>
-              </tr>
-            </thead>
             <tbody>
               {filteredComplaints.map((complaint, index) => (
                 <tr key={index}>
-                  <td>{complaint.title}</td>
-                  <td>{complaint.description}</td>
-                  <td>{complaint.role}</td>
-                  <td>{complaint.userName}</td>
-                  <td>{complaint.category}</td>
                   <td>
-                    <span className={`priority-${complaint.priority.toLowerCase()}`}>
-                      {complaint.priority}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'}`}>
-                      {complaint.status}
-                    </span>
+                    <div className="complaint-card">
+                      <div className="complaint-header">
+                        <div className="complaint-title">{complaint.title}</div>
+                        <div
+                          className={`status-badge ${
+                            complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'
+                          }`}
+                        >
+                          {complaint.status}
+                        </div>
+                      </div>
+                      <div className="complaint-description">{complaint.description}</div>
+                      <div className="complaint-footer">
+                        <div>
+                          <span className="complaint-role">{complaint.role}</span> - {complaint.userName}
+                        </div>
+                        <div className={`complaint-priority priority-${complaint.priority.toLowerCase()}`}>
+                          {complaint.priority}
+                        </div>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -264,6 +263,6 @@ const options = {
       </div>
     </div>
   );
-}
+};
 
 export default AdminDashboard;

@@ -1,5 +1,4 @@
-/* AdminDashboard.css */
-
+/* General Container and Background */
 .admin-container {
   display: flex;
   flex-direction: column;
@@ -8,8 +7,9 @@
   min-height: 100vh;
 }
 
+/* Header */
 .admin-header {
-  background: #fff;
+  background-color: #ffffff;
   text-align: center;
   padding: 15px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -22,6 +22,7 @@
   font-size: 24px;
 }
 
+/* Info Cards */
 .info-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -30,10 +31,10 @@
 }
 
 .info-card {
-  background: #fff;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .info-card h3 {
@@ -48,18 +49,20 @@
   color: #333;
 }
 
+/* Main Content and Right Section */
 .main-content {
   display: flex;
   gap: 20px;
 }
 
-.card {
-  background: #fff;
+.card,
+.small-card,
+.pie-card {
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  flex: 1;
 }
 
 .right-section {
@@ -70,18 +73,17 @@
 
 .small-card {
   flex: 1;
-  padding: 10px;
 }
 
-/* Filter and Analytics sections */
+/* Filter and Analytics */
 .filters-section,
 .analytics-grid {
-  display: grid;
+  display: flex;
   gap: 15px;
 }
 
 .filters-section {
-  grid-template-columns: repeat(2, 1fr);
+  flex-direction: column;
 }
 
 .filter-group {
@@ -100,18 +102,19 @@
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: #fff;
+  background-color: #ffffff;
   color: #333;
   width: 100%;
   box-sizing: border-box;
 }
 
 .analytics-card {
-  background: #f8f9fa;
+  background-color: #f8f9fa;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .analytics-card h3 {
@@ -137,17 +140,18 @@
 .complaints-table td {
   padding: 10px;
   text-align: left;
-  border: 1px solid #ddd;
+  border: 1px solid white;
 }
 
 .complaints-table th {
   background-color: #f4f4f4;
-} 
-/* Status badges */
+}
+
+/* Status Badges */
 .status-badge {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -161,76 +165,56 @@
   color: #991b1b;
 }
 
-/* Priority colors */
-.priority-high {
-  color: #dc2626;
-}
-
-.priority-medium {
-  color: #d97706;
-}
-
-.priority-low {
-  color: #059669;
-}
-
-/* Reset button container styling for alignment */
+/* Reset Button */
 .reset-container {
   display: flex;
-  justify-content: flex-end; /* Aligns the reset button to the right */
+  justify-content: flex-end;
   margin-top: 10px;
 }
 
-/* Reset button styling */
 .reset-button {
-  background-color:rgb(190, 190, 190);
-  color: rgb(255, 255, 255);
+  background-color: #bebebe;
+  color: #ffffff;
   border: none;
   padding: 10px;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
-  width: 30%;
   font-size: 14px;
   font-weight: bold;
   transition: background-color 0.3s;
-  margin-left: auto;
+  width: 30%;
 }
 
 .reset-button:hover {
-  background-color: rgb(100, 100, 100);
+  background-color: #646464;
 }
+
+/* Analytics Grid and Pie Chart */
 .analytics-grid {
-  display: flex;
   justify-content: space-between;
   gap: 20px;
 }
+
 .pie-card {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  width: 48%; /* To make sure the cards are side by side */
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 48%;
+  padding: 20px;
 }
 
-.analytics-card.pie-card {
-  padding: 20px;
-  display: flex;
-  flex-direction: row; /* Changed from column to row */
-  align-items: center;
-  gap: 20px; /* Space between chart and legend */
-}
 .chart-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px; /* Adjust this size as needed */
+  width: 150px;
   height: 150px;
 }
+
 .legend-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
   margin-left: 20px;
 }
@@ -239,4 +223,144 @@
   font-size: 14px;
   color: #333;
   margin: 5px 0;
+}
+
+/* Complaints Section Title */
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  padding-top: 20px;
+}
+
+/* Complaint Card */
+.complaint-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.complaint-card:hover {
+  transform: scale(1.01); /* Slightly scales up the card */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Adds a stronger shadow */
+}
+
+.complaint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.complaint-title {
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.complaint-priority {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Priority Styling */
+.complaint-priority.priority-high {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.complaint-priority.priority-medium {
+  background-color: #fbbf24;
+  color: #000000;
+}
+
+.complaint-priority.priority-low {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.complaint-description {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.complaint-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+/* Dropdown Menu Styles for Admin Dashboard */
+.form-group.department,
+.form-group.user-type {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-group.department label,
+.form-group.user-type label {
+    margin-bottom: 7px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.dropdown-container {
+    position: relative;
+    width: 100%;
+}
+
+/* Style for the custom dropdown */
+/* Custom arrow for the dropdown */
+.dropdown {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  position: relative;
+  padding-right: 30px; /* Ensures space for the custom arrow */
+}
+
+.dropdown::after {
+  content: '▼'; /* Unicode for the downwards arrow */
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 16px;
+  color: #333;
+}
+
+
+/* Optional: Style the select on focus */
+.dropdown:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+/* Additional styling to make the dropdown more visually appealing */
+.filter-group label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.filter-group select {
+  width: 100%;
 }
