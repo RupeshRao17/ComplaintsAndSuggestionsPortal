@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './AdminDashboard.css';
 import collegeLogo from './logo_campus.png';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import {db} from '../firebaseConfig';
 
-// Register the necessary components from Chart.js
+// Initialize Firestore
+
+
+// Register necessary Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AdminDashboard = () => {
   const location = useLocation();
   const { adminName, role } = location.state || {};
 
-  const [complaints, setComplaints] = useState([
-    {
-      title: "Network Issue",
-      description: "Wi-Fi not working in Lab 3",
-      role: "Faculty",
-      userName: "John Doe",
-      category: "Infrastructure",
-      priority: "High",
-      status: "Resolved"
-    },
-    {
-      title: "Maintenance",
-      description: "Classroom projector needs maintenance in Room 302.",
-      role: "Student",
-      userName: "Mayur Joshi",
-      category: "Infrastructure",
-      priority: "Medium",
-      status: "Unresolved"
-    },
-    // Additional sample complaints can go here
-  ]);
-
+  const [complaints, setComplaints] = useState([]);
   const [filters, setFilters] = useState({
     status: 'all',
     category: 'all',
     role: 'all',
     priority: 'all'
   });
+
+  // Fetch complaints from Firestore on component mount
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const complaintsCollection = collection(db, 'complaints');
+        const complaintSnapshot = await getDocs(complaintsCollection);
+        const complaintList = complaintSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setComplaints(complaintList);
+      } catch (error) {
+        console.error("Error fetching complaints: ", error);
+      }
+    };
+
+    fetchComplaints();
+  }, []);
 
   const resetFilters = () => {
     setFilters({
@@ -141,57 +144,8 @@ const AdminDashboard = () => {
           <div className="card small-card">
             <h2>Filters</h2>
             <div className="filters-section">
-              <div className="filter-group">
-                <label>Status</label>
-                <select 
-                  className="dropdown"
-                  value={filters.status}
-                  onChange={(e) => setFilters({...filters, status: e.target.value})}
-                >
-                  <option value="all">All</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="unresolved">Unresolved</option>
-                </select>
-              </div>
-              <div className="filter-group">
-                <label>Category</label>
-                <select 
-                  className="dropdown"
-                  value={filters.category}
-                  onChange={(e) => setFilters({...filters, category: e.target.value})}
-                >
-                  <option value="all">All</option>
-                  <option value="infrastructure">Infrastructure</option>
-                  <option value="academic">Academic</option>
-                  <option value="administrative">Administrative</option>
-                </select>
-              </div>
-              <div className="filter-group">
-                <label>Role</label>
-                <select 
-                  className="dropdown"
-                  value={filters.role}
-                  onChange={(e) => setFilters({...filters, role: e.target.value})}
-                >
-                  <option value="all">All</option>
-                  <option value="student">Student</option>
-                  <option value="faculty">Faculty</option>
-                  <option value="others">Others</option>
-                </select>
-              </div>
-              <div className="filter-group">
-                <label>Priority</label>
-                <select 
-                  className="dropdown"
-                  value={filters.priority}
-                  onChange={(e) => setFilters({...filters, priority: e.target.value})}
-                >
-                  <option value="all">All</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                </select>
-              </div>
+              {/* Filter Dropdowns */}
+              {/* Add additional filter dropdowns here */}
             </div>
             <div className="reset-container">
               <button className="reset-button" onClick={resetFilters}>Reset Filters</button>
@@ -235,7 +189,7 @@ const AdminDashboard = () => {
                   <td>
                     <div className="complaint-card">
                       <div className="complaint-header">
-                        <div className="complaint-title">{complaint.title}</div>
+                        <div className="complaint-title">{complaint.complaintTitle}</div>
                         <div
                           className={`status-badge ${
                             complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'
@@ -247,7 +201,7 @@ const AdminDashboard = () => {
                       <div className="complaint-description">{complaint.description}</div>
                       <div className="complaint-footer">
                         <div>
-                          <span className="complaint-role">{complaint.role}</span> - {complaint.userName}
+                          <span className="complaint-role">{complaint.role}</span> - {complaint.fullName}
                         </div>
                         <div className={`complaint-priority priority-${complaint.priority.toLowerCase()}`}>
                           {complaint.priority}
