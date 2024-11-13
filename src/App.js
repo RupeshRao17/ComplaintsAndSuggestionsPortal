@@ -8,6 +8,7 @@ import Login from './Login';
 import StudentDashboard from './components/StudentDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SignUp from './components/SignUp';
+import RegisterComplaint from './components/RegisterComplaint';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -28,6 +29,7 @@ function App() {
         <Route path="/dashboard" element={<StudentDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/register-complaint" element={<RegisterComplaint/>} />
       </Routes>
     </Router>
   );

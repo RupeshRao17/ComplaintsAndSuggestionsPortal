@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import './StudentDashboard.css';
 import { auth, db } from '../firebaseConfig';
@@ -11,38 +12,30 @@ const StudentDashboard = () => {
   const [studentName, setStudentName] = useState('');
   const [department, setDepartment] = useState('');
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is an admin
-  
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Check if the current user is an admin by checking the 'authorizedAdmins' collection
+    // Check if the user is an admin
     const checkIfAdmin = async () => {
       if (auth.currentUser) {
         const email = auth.currentUser.email;
         const adminRef = doc(db, 'authorizedAdmins', email);
         const adminDoc = await getDoc(adminRef);
-
-        if (adminDoc.exists()) {
-          setIsAdmin(true); // User is an admin
-        } else {
-          setIsAdmin(false); // User is not an admin, redirect to normal dashboard
-         
-        }
+        setIsAdmin(adminDoc.exists());
       }
     };
 
-    // Get current user's information and complaints
+    // Fetch student profile data
     const fetchStudentData = async () => {
       if (auth.currentUser) {
         try {
           const userRef = doc(db, 'users', auth.currentUser.uid);
           const userDoc = await getDoc(userRef);
-
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            setStudentName(userData.name); // Set student name from Firestore
-            setDepartment(userData.department); // Set department from Firestore
+            setStudentName(userData.name);
+            setDepartment(userData.department);
           }
         } catch (error) {
           console.error("Error fetching student data:", error);
@@ -50,36 +43,33 @@ const StudentDashboard = () => {
       }
     };
 
+    // Fetch complaints for the current user
     const fetchComplaints = async () => {
       if (auth.currentUser) {
         try {
           const complaintsRef = collection(db, 'complaints');
           const complaintsQuery = query(
             complaintsRef,
-            where("userId", "==", auth.currentUser.uid),
-            where("status", "!=", "Resolved")
+            where("userId", "==", auth.currentUser.uid)
           );
           const querySnapshot = await getDocs(complaintsQuery);
-
           const complaintsData = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-
           setComplaints(complaintsData);
         } catch (error) {
           console.error("Error fetching complaints:", error);
         } finally {
-          setLoading(false); // Stop loading once data is fetched
+          setLoading(false);
         }
       }
     };
 
-    checkIfAdmin(); // Check if the user is an admin
-    fetchStudentData(); // Fetch student data
-    fetchComplaints(); // Fetch complaints
-
-  }, ); // Run when the component mounts
+    checkIfAdmin();
+    fetchStudentData();
+    fetchComplaints();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -94,11 +84,11 @@ const StudentDashboard = () => {
         {/* Sidebar */}
         <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <nav className="sidebar-nav">
-            <a href="#dashboard" className="nav-link">Dashboard</a>
-            <a href="#make-complaint" className="nav-link">Make a Complaint</a>
-            <a href="#track-complaint" className="nav-link">Track Your Complaint</a>
-            <a href="#suggestions" className="nav-link">Give Suggestion</a>
-            {isAdmin && <a href="#admin" className="nav-link">Admin Panel</a>} {/* Only show admin link if the user is an admin */}
+            <Link to="/dashboard" className="nav-link">Dashboard</Link>
+            <Link to="/register-complaint" className="nav-link">Make a Complaint</Link>
+            <Link to="#track-complaint" className="nav-link">Track Your Complaint</Link>
+            <Link to="#suggestions" className="nav-link">Give Suggestion</Link>
+            {isAdmin && <Link to="/admin" className="nav-link">Admin Panel</Link>}
           </nav>
         </aside>
 
@@ -127,20 +117,24 @@ const StudentDashboard = () => {
                     <div key={complaint.id} className="complaint-card">
                       <div className="complaint-header">
                         <div className="complaint-info">
-                          <h4 className="complaint-title">{complaint.title}</h4>
+                          <h4 className="complaint-title">{complaint.complaintTitle}</h4>
                           <p className="complaint-id">Complaint ID: #{complaint.id}</p>
                         </div>
-                        <span className="status-badge">
+                        <span className={`status-badge ${complaint.status.toLowerCase()}`}>
                           {complaint.status}
                         </span>
                       </div>
                       <p className="complaint-description">
                         {complaint.description}
                       </p>
+                      <div className="complaint-footer">
+                        <p><strong>Category:</strong> {complaint.category}</p>
+                        <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <p>No active complaints found.</p> // Show this message if no complaints found
+                  <p>No active complaints found.</p>
                 )}
               </div>
             </div>
