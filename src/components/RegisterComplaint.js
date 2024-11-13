@@ -6,6 +6,9 @@ import { addDoc, collection } from 'firebase/firestore';
 import collegeLogo from './logo_campus.png'; // Logo path
 import Modal from './Modal'; // Import the Modal component
 
+
+//check
+
 const RegisterComplaint = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
