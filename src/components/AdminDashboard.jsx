@@ -4,13 +4,10 @@ import './AdminDashboard.css';
 import collegeLogo from './logo_campus.png';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import {db} from '../firebaseConfig';
 
-// Initialize Firestore
 
-
-// Register necessary Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AdminDashboard = () => {
@@ -65,11 +62,7 @@ const AdminDashboard = () => {
   const resolvedComplaints = complaints.filter(c => c.status === 'Resolved').length;
   const unresolvedComplaints = complaints.filter(c => c.status === 'Unresolved').length;
 
-  const complaintsByRole = complaints.reduce((acc, complaint) => {
-    if (complaint.role === 'Student') acc.student++;
-    if (complaint.role === 'Faculty') acc.faculty++;
-    return acc;
-  }, { student: 0, faculty: 0 });
+
 
   const unresolvedComplaintsByRole = complaints
     .filter(complaint => complaint.status === 'Unresolved')
@@ -144,8 +137,57 @@ const AdminDashboard = () => {
           <div className="card small-card">
             <h2>Filters</h2>
             <div className="filters-section">
-              {/* Filter Dropdowns */}
-              {/* Add additional filter dropdowns here */}
+              <div className="filter-group">
+                <label>Status</label>
+                <select 
+                  className="dropdown"
+                  value={filters.status}
+                  onChange={(e) => setFilters({...filters, status: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="unresolved">Unresolved</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Category</label>
+                <select 
+                  className="dropdown"
+                  value={filters.category}
+                  onChange={(e) => setFilters({...filters, category: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="infrastructure">Infrastructure</option>
+                  <option value="academic">Academic</option>
+                  <option value="administrative">Administrative</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Role</label>
+                <select 
+                  className="dropdown"
+                  value={filters.role}
+                  onChange={(e) => setFilters({...filters, role: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="others">Others</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Priority</label>
+                <select 
+                  className="dropdown"
+                  value={filters.priority}
+                  onChange={(e) => setFilters({...filters, priority: e.target.value})}
+                >
+                  <option value="all">All</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
             </div>
             <div className="reset-container">
               <button className="reset-button" onClick={resetFilters}>Reset Filters</button>

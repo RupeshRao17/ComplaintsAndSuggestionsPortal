@@ -354,13 +354,46 @@
   outline: none;
 }
 
-/* Additional styling to make the dropdown more visually appealing */
+/* Container for all filters */
+.filters-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 100%;
+}
+
+/* Each filter group */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styling for labels */
 .filter-group label {
   font-weight: bold;
   margin-bottom: 8px;
-  display: block;
 }
 
+/* Styling for dropdowns */
 .filter-group select {
   width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  appearance: none;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+}
+
+/* Media Query for Mobile View: Stack filters vertically */
+@media (max-width: 600px) {
+  .filters-section {
+    grid-template-columns: 1fr;
+  }
 }
