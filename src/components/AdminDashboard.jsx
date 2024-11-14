@@ -4,9 +4,8 @@ import './AdminDashboard.css';
 import collegeLogo from './logo_campus.png';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { collection, getDocs } from 'firebase/firestore';
-import {db} from '../firebaseConfig';
-
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -21,6 +20,9 @@ const AdminDashboard = () => {
     role: 'all',
     priority: 'all'
   });
+
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [feedback, setFeedback] = useState('');
 
   // Fetch complaints from Firestore on component mount
   useEffect(() => {
@@ -49,7 +51,6 @@ const AdminDashboard = () => {
       priority: 'all'
     });
   };
-
   const filteredComplaints = complaints.filter(complaint => {
     const statusMatch = filters.status === 'all' || complaint.status.toLowerCase() === filters.status;
     const categoryMatch = filters.category === 'all' || complaint.category.toLowerCase() === filters.category;
@@ -100,6 +101,33 @@ const AdminDashboard = () => {
       },
     },
   };
+
+  const handleFeedbackSubmit = async (complaintId) => {
+    if (!feedback) return;
+
+    const complaintRef = doc(db, 'complaints', complaintId);
+    try {
+      await updateDoc(complaintRef, {
+        feedback: feedback,
+        updatedBy: adminName,
+        status: 'Resolved',
+      });
+
+      setComplaints(prevComplaints =>
+        prevComplaints.map(complaint =>
+          complaint.id === complaintId
+            ? { ...complaint, feedback: feedback, updatedBy: adminName, status: 'Resolved' }
+            : complaint
+        )
+      );
+      setFeedback(''); // Clear feedback after submission
+      setSelectedComplaint(null); // Deselect complaint after feedback is added
+    } catch (error) {
+      console.error("Error updating complaint: ", error);
+    }
+  };
+
+
 
   return (
     <div className="admin-dashboard">
@@ -222,6 +250,8 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        
+
         <div className="complaints-section">
           <h2 className="section-title">Complaints</h2>
           <table className="complaints-table">
@@ -249,6 +279,22 @@ const AdminDashboard = () => {
                           {complaint.priority}
                         </div>
                       </div>
+
+                      {complaint.status === 'Unresolved' && (
+                        <div className="feedback-section">
+                          <textarea
+                            placeholder="Add feedback..."
+                            value={selectedComplaint === complaint.id ? feedback : ''}
+                            onChange={(e) => {
+                              setSelectedComplaint(complaint.id);
+                              setFeedback(e.target.value);
+                            }}
+                          ></textarea>
+                          <button onClick={() => handleFeedbackSubmit(complaint.id)}>
+                            Mark as Resolved
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
