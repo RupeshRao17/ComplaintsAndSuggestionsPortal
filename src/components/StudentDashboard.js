@@ -10,6 +10,9 @@ import collegeLogo from './logo_campus.png'; // Path to college logo
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [studentName, setStudentName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [roleOfUser, setRoleUser] = useState('');
+  const [emailId, setEmailID] = useState('');
   const [department, setDepartment] = useState('');
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +39,9 @@ const StudentDashboard = () => {
             const userData = userDoc.data();
             setStudentName(userData.name);
             setDepartment(userData.department);
+            setContactNumber(userData.contactNumber);
+            setRoleUser(userData.userType);
+            setEmailID(userData.email);
           }
         } catch (error) {
           console.error("Error fetching student data:", error);
@@ -102,6 +108,9 @@ const StudentDashboard = () => {
                   <img src={studentPic} alt="Profile" className="avatar" />
                 </div>
                 <h2 className="profile-name">{studentName}</h2>
+                <p className="profile-contact">{contactNumber}</p>
+                <p className="profile-email">{emailId}</p>
+                <p className="profile-role">{roleOfUser}</p>
                 <p className="profile-department">{department}</p>
               </div>
             </div>
@@ -130,6 +139,20 @@ const StudentDashboard = () => {
                       <div className="complaint-footer">
                         <p><strong>Category:</strong> {complaint.category}</p>
                         <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                        <p><strong>Priority:</strong> {complaint.priority}</p>
+                        <div className="feedback-section">
+                          <h4>Feedback:</h4>
+                          {complaint.feedback && complaint.feedback.length > 0 ? (
+                            complaint.feedback.map((feedback, index) => (
+                              <div key={index} className="feedback-item">
+                                <p><strong>{feedback.adminName}:</strong> {feedback.feedback}</p>
+                                <p><small>{new Date(feedback.timestamp).toLocaleString()}</small></p>
+                              </div>
+                            ))
+                          ) : (
+                            <p>No feedback yet.</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))

@@ -189,19 +189,6 @@ const AdminDashboard = () => {
                 </select>
               </div>
               <div className="filter-group">
-                <label>Category</label>
-                <select 
-                  className="dropdown"
-                  value={filters.category}
-                  onChange={(e) => setFilters({...filters, category: e.target.value})}
-                >
-                  <option value="all">All</option>
-                  <option value="infrastructure">Infrastructure</option>
-                  <option value="academic">Academic</option>
-                  <option value="administrative">Administrative</option>
-                </select>
-              </div>
-              <div className="filter-group">
                 <label>Role</label>
                 <select 
                   className="dropdown"
@@ -261,7 +248,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-
         <div className="complaints-section">
           <h2>Complaints</h2>
           <table className="complaints-table">
@@ -270,18 +256,32 @@ const AdminDashboard = () => {
                 <tr key={complaint.id}>
                   <td>
                     <div className="complaint-card">
-                      <div className="complaint-header">
-                        <h3>{complaint.complaintTitle}</h3>
+                    <div className="complaint-header">
+                      <h3>{complaint.complaintTitle}</h3>
+                      <div className="badge-container">
                         <span className={`status-badge status-${complaint.status.toLowerCase()}`}>
                           {complaint.status}
                         </span>
                       </div>
+                    </div>
                       <p>{complaint.description}</p>
                       <div>
-                        <strong>Role:</strong> {complaint.role} |{' '}
-                        <strong>Priority:</strong> {complaint.priority}
+                      <strong>Name:</strong> {complaint.fullName} - {complaint.role} | {' '}
+                        <strong>Priority: </strong>s
+                        <span className="priority-badge"
+                          style={{
+                            backgroundColor:
+                            complaint.priority.toLowerCase() === 'high'
+                            ? '#dc2626'
+                            : complaint.priority.toLowerCase() === 'medium'
+                            ? '#f97316'
+                            : '#059669',
+                            color: '#fff',
+                          }}
+                        >
+                        {complaint.priority}
+                      </span>
                       </div>
-
                       <div className="complaint-actions">
                         <button
                           className="action-button small"

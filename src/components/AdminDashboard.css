@@ -448,3 +448,24 @@
 .feedback-form button:hover {
   background-color: #1d4ed8;
 }
+/*Priority badge*/
+.badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* Adjust spacing between badges */
+}
+
+.status-badge {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.priority-badge {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
