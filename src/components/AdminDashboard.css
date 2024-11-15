@@ -397,3 +397,54 @@
     grid-template-columns: 1fr;
   }
 }
+.complaint-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.action-button {
+  padding: 5px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0a0a5e;
+  color: white;
+  width: auto; /* Prevents full width */
+  flex-shrink: 0; /* Prevents stretching */
+  transition: background-color 0.3s ease;
+}
+
+.action-button:hover {
+  background-color: #050548;
+}
+
+.feedback-form {
+  margin-top: 10px;
+}
+
+.feedback-form textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+}
+
+.feedback-form button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  color: white;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-form button:hover {
+  background-color: #1d4ed8;
+}

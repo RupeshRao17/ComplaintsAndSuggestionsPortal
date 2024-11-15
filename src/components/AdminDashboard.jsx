@@ -4,7 +4,7 @@ import './AdminDashboard.css';
 import collegeLogo from './logo_campus.png';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -18,30 +18,30 @@ const AdminDashboard = () => {
     status: 'all',
     category: 'all',
     role: 'all',
-    priority: 'all'
+    priority: 'all',
   });
-
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null); // Track the complaint for feedback
   const [feedback, setFeedback] = useState('');
 
-  // Fetch complaints from Firestore on component mount
+  // Fetch complaints from Firestore
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
         const complaintsCollection = collection(db, 'complaints');
         const complaintSnapshot = await getDocs(complaintsCollection);
-        const complaintList = complaintSnapshot.docs.map(doc => ({
+        const complaintList = complaintSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }));
         setComplaints(complaintList);
       } catch (error) {
-        console.error("Error fetching complaints: ", error);
+        console.error('Error fetching complaints: ', error);
       }
     };
 
     fetchComplaints();
   }, []);
+
 
   const resetFilters = () => {
     setFilters({
@@ -102,32 +102,43 @@ const AdminDashboard = () => {
     },
   };
 
-  const handleFeedbackSubmit = async (complaintId) => {
+
+  const handleSendFeedback = async (complaintId) => {
     if (!feedback) return;
 
-    const complaintRef = doc(db, 'complaints', complaintId);
     try {
+      const complaintRef = doc(db, 'complaints', complaintId);
       await updateDoc(complaintRef, {
-        feedback: feedback,
-        updatedBy: adminName,
-        status: 'Resolved',
+        feedback: arrayUnion({ adminName, feedback, timestamp: new Date().toISOString() }),
       });
-
-      setComplaints(prevComplaints =>
-        prevComplaints.map(complaint =>
+      setComplaints((prev) =>
+        prev.map((complaint) =>
           complaint.id === complaintId
-            ? { ...complaint, feedback: feedback, updatedBy: adminName, status: 'Resolved' }
+            ? { ...complaint, feedback: [...(complaint.feedback || []), { adminName, feedback, timestamp: new Date().toISOString() }] }
             : complaint
         )
       );
-      setFeedback(''); // Clear feedback after submission
-      setSelectedComplaint(null); // Deselect complaint after feedback is added
+      setFeedback('');
+      setSelectedComplaintId(null);
     } catch (error) {
-      console.error("Error updating complaint: ", error);
+      console.error('Error sending feedback: ', error);
     }
   };
 
-
+  const handleToggleResolved = async (complaintId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === 'Resolved' ? 'Unresolved' : 'Resolved';
+      const complaintRef = doc(db, 'complaints', complaintId);
+      await updateDoc(complaintRef, { status: newStatus, updatedBy: adminName });
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint.id === complaintId ? { ...complaint, status: newStatus, updatedBy: adminName } : complaint
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling complaint status: ', error);
+    }
+  };
 
   return (
     <div className="admin-dashboard">
@@ -150,13 +161,13 @@ const AdminDashboard = () => {
           <div className="info-card">
             <h3>Resolved</h3>
             <div className="number" style={{ color: '#059669' }}>
-              {resolvedComplaints}
+              {complaints.filter((c) => c.status === 'Resolved').length}
             </div>
           </div>
           <div className="info-card">
             <h3>Pending</h3>
             <div className="number" style={{ color: '#dc2626' }}>
-              {unresolvedComplaints}
+              {complaints.filter((c) => c.status === 'Unresolved').length}
             </div>
           </div>
         </section>
@@ -250,49 +261,69 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        
 
         <div className="complaints-section">
-          <h2 className="section-title">Complaints</h2>
+          <h2>Complaints</h2>
           <table className="complaints-table">
             <tbody>
-              {filteredComplaints.map((complaint, index) => (
-                <tr key={index}>
+              {filteredComplaints.map((complaint) => (
+                <tr key={complaint.id}>
                   <td>
                     <div className="complaint-card">
                       <div className="complaint-header">
-                        <div className="complaint-title">{complaint.complaintTitle}</div>
-                        <div
-                          className={`status-badge ${
-                            complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'
-                          }`}
-                        >
+                        <h3>{complaint.complaintTitle}</h3>
+                        <span className={`status-badge status-${complaint.status.toLowerCase()}`}>
                           {complaint.status}
-                        </div>
+                        </span>
                       </div>
-                      <div className="complaint-description">{complaint.description}</div>
-                      <div className="complaint-footer">
-                        <div>
-                          <span className="complaint-role">{complaint.role}</span> - {complaint.fullName}
-                        </div>
-                        <div className={`complaint-priority priority-${complaint.priority.toLowerCase()}`}>
-                          {complaint.priority}
-                        </div>
+                      <p>{complaint.description}</p>
+                      <div>
+                        <strong>Role:</strong> {complaint.role} |{' '}
+                        <strong>Priority:</strong> {complaint.priority}
                       </div>
 
-                      {complaint.status === 'Unresolved' && (
-                        <div className="feedback-section">
+                      <div className="complaint-actions">
+                        <button
+                          className="action-button small"
+                          onClick={() =>
+                            setSelectedComplaintId(
+                              selectedComplaintId === complaint.id ? null : complaint.id
+                            )
+                          }
+                        >
+                          Feedback
+                        </button>
+                        <button
+                          className="action-button small"
+                          onClick={() => handleToggleResolved(complaint.id, complaint.status)}
+                        >
+                          {complaint.status === 'Resolved' ? 'Unresolve' : 'Resolve'}
+                        </button>
+                      </div>
+
+                      {selectedComplaintId === complaint.id && (
+                        <div className="feedback-form">
                           <textarea
-                            placeholder="Add feedback..."
-                            value={selectedComplaint === complaint.id ? feedback : ''}
-                            onChange={(e) => {
-                              setSelectedComplaint(complaint.id);
-                              setFeedback(e.target.value);
-                            }}
-                          ></textarea>
-                          <button onClick={() => handleFeedbackSubmit(complaint.id)}>
-                            Mark as Resolved
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
+                            placeholder="Enter your feedback"
+                          />
+                          <button onClick={() => handleSendFeedback(complaint.id)}>
+                            Submit
                           </button>
+                        </div>
+                      )}
+
+                      {complaint.feedback && complaint.feedback.length > 0 && (
+                        <div className="feedback-list">
+                          <h4>Feedback:</h4>
+                          <ul>
+                            {complaint.feedback.map((fb, index) => (
+                              <li key={index}>
+                                <strong>{fb.adminName}</strong>: {fb.feedback} <em>({new Date(fb.timestamp).toLocaleString()})</em>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       )}
                     </div>
