@@ -4,15 +4,15 @@ import './AdminDashboard.css';
 import collegeLogo from './logo_campus.png';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AdminDashboard = () => {
   const location = useLocation();
-  const { adminName, role } = location.state || {};
-
+  const { adminName: adminEmail, role } = location.state || {}; // Email from location state
+  const [adminName, setAdminName] = useState(''); // Store admin's name
   const [complaints, setComplaints] = useState([]);
   const [filters, setFilters] = useState({
     status: 'all',
@@ -22,6 +22,25 @@ const AdminDashboard = () => {
   });
   const [selectedComplaintId, setSelectedComplaintId] = useState(null); // Track the complaint for feedback
   const [feedback, setFeedback] = useState('');
+
+  // Fetch admin details
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      try {
+        if (adminEmail) {
+          const adminRef = doc(db, 'authorizedAdmins', adminEmail);
+          const adminDoc = await getDoc(adminRef);
+          if (adminDoc.exists()) {
+            setAdminName(adminDoc.data().name); // Set admin's name
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching admin details:', error);
+      }
+    };
+
+    fetchAdminDetails();
+  }, [adminEmail]);
 
   // Fetch complaints from Firestore
   useEffect(() => {
@@ -42,16 +61,16 @@ const AdminDashboard = () => {
     fetchComplaints();
   }, []);
 
-
   const resetFilters = () => {
     setFilters({
       status: 'all',
       category: 'all',
       role: 'all',
-      priority: 'all'
+      priority: 'all',
     });
   };
-  const filteredComplaints = complaints.filter(complaint => {
+
+  const filteredComplaints = complaints.filter((complaint) => {
     const statusMatch = filters.status === 'all' || complaint.status.toLowerCase() === filters.status;
     const categoryMatch = filters.category === 'all' || complaint.category.toLowerCase() === filters.category;
     const roleMatch = filters.role === 'all' || complaint.role.toLowerCase() === filters.role;
@@ -60,19 +79,20 @@ const AdminDashboard = () => {
   });
 
   // Prepare data for pie charts
-  const resolvedComplaints = complaints.filter(c => c.status === 'Resolved').length;
-  const unresolvedComplaints = complaints.filter(c => c.status === 'Unresolved').length;
-
-
+  const resolvedComplaints = complaints.filter((c) => c.status === 'Resolved').length;
+  const unresolvedComplaints = complaints.filter((c) => c.status === 'Unresolved').length;
 
   const unresolvedComplaintsByRole = complaints
-    .filter(complaint => complaint.status === 'Unresolved')
-    .reduce((acc, complaint) => {
-      if (complaint.role === 'Student') acc.student++;
-      if (complaint.role === 'Faculty') acc.faculty++;
-      return acc;
-    }, { student: 0, faculty: 0 });
-  
+    .filter((complaint) => complaint.status === 'Unresolved')
+    .reduce(
+      (acc, complaint) => {
+        if (complaint.role === 'Student') acc.student++;
+        if (complaint.role === 'Faculty') acc.faculty++;
+        return acc;
+      },
+      { student: 0, faculty: 0 }
+    );
+
   const statusData = {
     labels: ['Resolved', 'Unresolved'],
     datasets: [
@@ -92,7 +112,7 @@ const AdminDashboard = () => {
       },
     ],
   };
-  
+
   const options = {
     responsive: true,
     plugins: {
@@ -101,7 +121,6 @@ const AdminDashboard = () => {
       },
     },
   };
-
 
   const handleSendFeedback = async (complaintId) => {
     if (!feedback) return;
@@ -121,7 +140,7 @@ const AdminDashboard = () => {
       setFeedback('');
       setSelectedComplaintId(null);
     } catch (error) {
-      console.error('Error sending feedback: ', error);
+      console.error('Error sending feedback:', error);
     }
   };
 
@@ -136,7 +155,7 @@ const AdminDashboard = () => {
         )
       );
     } catch (error) {
-      console.error('Error toggling complaint status: ', error);
+      console.error('Error toggling complaint status:', error);
     }
   };
 
@@ -150,7 +169,11 @@ const AdminDashboard = () => {
       <div className="admin-container">
         <div className="admin-header">
           <h1>Admin Dashboard</h1>
-          {adminName && <p>Welcome, {adminName} - {role}</p>}
+          {adminName && (
+            <p>
+              Welcome, {adminName} ({adminEmail}) - {role}
+            </p>
+          )}
         </div>
 
         <section className="info-cards">
@@ -161,13 +184,13 @@ const AdminDashboard = () => {
           <div className="info-card">
             <h3>Resolved</h3>
             <div className="number" style={{ color: '#059669' }}>
-              {complaints.filter((c) => c.status === 'Resolved').length}
+              {resolvedComplaints}
             </div>
           </div>
           <div className="info-card">
             <h3>Pending</h3>
             <div className="number" style={{ color: '#dc2626' }}>
-              {complaints.filter((c) => c.status === 'Unresolved').length}
+              {unresolvedComplaints}
             </div>
           </div>
         </section>
@@ -267,7 +290,7 @@ const AdminDashboard = () => {
                       <p>{complaint.description}</p>
                       <div>
                       <strong>Name:</strong> {complaint.fullName} - {complaint.role} | {' '}
-                        <strong>Priority: </strong>s
+                        <strong>Priority: </strong>
                         <span className="priority-badge"
                           style={{
                             backgroundColor:
