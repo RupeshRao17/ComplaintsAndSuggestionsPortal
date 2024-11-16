@@ -92,8 +92,7 @@ const StudentDashboard = () => {
           <nav className="sidebar-nav">
             <Link to="/dashboard" className="nav-link">Dashboard</Link>
             <Link to="/register-complaint" className="nav-link">Make a Complaint</Link>
-            <Link to="#track-complaint" className="nav-link">Track Your Complaint</Link>
-            <Link to="#suggestions" className="nav-link">Give Suggestion</Link>
+            <Link to="/make-suggestion" className="nav-link">Give Suggestion</Link>
             {isAdmin && <Link to="/admin" className="nav-link">Admin Panel</Link>}
           </nav>
         </aside>

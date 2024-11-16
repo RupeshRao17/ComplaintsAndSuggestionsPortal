@@ -9,6 +9,7 @@ import StudentDashboard from './components/StudentDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SignUp from './components/SignUp';
 import RegisterComplaint from './components/RegisterComplaint';
+import MakeSuggestion from './components/SubmitSuggestion';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,6 +31,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/register-complaint" element={<RegisterComplaint/>} />
+        <Route path="/make-suggestion" element={<MakeSuggestion/>} />
       </Routes>
     </Router>
   );
