@@ -107,10 +107,11 @@ function SignUp() {
                 required
                 className="dropdown"
               >
-                <option value="">Select User Type</option>
+                <option value="">Select role</option>
                 <option value="Student">Student</option>
                 <option value="Faculty">Faculty</option>
-                <option value="Other">Other</option>
+                <option value="Staff">Staff</option>
+                <option value="Visitor">Visitor</option>
               </select>
             </div>
           </div>

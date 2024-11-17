@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
 import './StudentDashboard.css';
 import { auth, db } from '../firebaseConfig';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -8,7 +7,6 @@ import studentPic from './user-profile.jpg'; // Path to student profile picture
 import collegeLogo from './logo_campus.png'; // Path to college logo
 
 const StudentDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [studentName, setStudentName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [roleOfUser, setRoleUser] = useState('');
@@ -19,7 +17,6 @@ const StudentDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Check if the user is an admin
     const checkIfAdmin = async () => {
       if (auth.currentUser) {
         const email = auth.currentUser.email;
@@ -29,7 +26,6 @@ const StudentDashboard = () => {
       }
     };
 
-    // Fetch student profile data
     const fetchStudentData = async () => {
       if (auth.currentUser) {
         try {
@@ -49,7 +45,6 @@ const StudentDashboard = () => {
       }
     };
 
-    // Fetch complaints for the current user
     const fetchComplaints = async () => {
       if (auth.currentUser) {
         try {
@@ -61,6 +56,7 @@ const StudentDashboard = () => {
           const querySnapshot = await getDocs(complaintsQuery);
           const complaintsData = querySnapshot.docs.map((doc) => ({
             id: doc.id,
+            showFeedback: false, // Initialize feedback visibility
             ...doc.data(),
           }));
           setComplaints(complaintsData);
@@ -77,6 +73,16 @@ const StudentDashboard = () => {
     fetchComplaints();
   }, []);
 
+  const toggleFeedbackVisibility = (complaintId) => {
+    setComplaints((prevComplaints) =>
+      prevComplaints.map((complaint) =>
+        complaint.id === complaintId
+          ? { ...complaint, showFeedback: !complaint.showFeedback }
+          : complaint
+      )
+    );
+  };
+
   return (
     <div className="dashboard-container">
       {/* Header */}
@@ -88,7 +94,7 @@ const StudentDashboard = () => {
       {/* Main Content */}
       <div className="dashboard-main">
         {/* Sidebar */}
-        <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+        <aside className="dashboard-sidebar">
           <nav className="sidebar-nav">
             <Link to="/dashboard" className="nav-link">Dashboard</Link>
             <Link to="/register-complaint" className="nav-link">Make a Complaint</Link>
@@ -99,68 +105,96 @@ const StudentDashboard = () => {
 
         {/* Main Content Area */}
         <main className="main-content">
-          <div className="content-container">
-            {/* Profile Section */}
-            <div className="profile-section">
-              <div className="profile-content">
-                <div className="profile-image">
-                  <img src={studentPic} alt="Profile" className="avatar" />
-                </div>
-                <h2 className="profile-name">{studentName}</h2>
-                <p className="profile-contact">{contactNumber}</p>
-                <p className="profile-email">{emailId}</p>
-                <p className="profile-role">{roleOfUser}</p>
-                <p className="profile-department">{department}</p>
+          {/* Profile Section */}
+          <section className="profile-section">
+            <div className="profile-card">
+              <img src={studentPic} alt="Profile" className="profile-avatar" />
+              <div className="profile-info">
+                <h2>{studentName}</h2>
+                <p><strong>Email:</strong> {emailId}</p>
+                <p><strong>Contact:</strong> {contactNumber}</p>
+                <p><strong>Role:</strong> {roleOfUser}</p>
+                <p><strong>Department:</strong> {department}</p>
               </div>
             </div>
+          </section>
 
-            {/* Active Complaints Section */}
-            <div className="complaints-section">
-              <h3 className="section-title"><b>Active Complaints</b></h3>
-              <div className="complaints-list">
-                {loading ? (
-                  <p>Loading...</p> // Show loading message until data is fetched
-                ) : complaints.length > 0 ? (
-                  complaints.map((complaint) => (
-                    <div key={complaint.id} className="complaint-card">
-                      <div className="complaint-header">
-                        <div className="complaint-info">
-                          <h4 className="complaint-title">{complaint.complaintTitle}</h4>
-                          <p className="complaint-id">Complaint ID: #{complaint.id}</p>
-                        </div>
-                        <span className={`status-badge ${complaint.status.toLowerCase()}`}>
-                          {complaint.status}
-                        </span>
+          {/* Active Complaints Section */}
+          <section className="complaints-section">
+            <h3>Active Complaints</h3>
+            {loading ? (
+              <p>Loading complaints...</p>
+            ) : complaints.length > 0 ? (
+              <div className="complaints-container">
+                {complaints.map((complaint) => (
+                  <div key={complaint.id} className="complaint-card">
+                    <div className="complaint-header">
+                      <div className="complaint-info">
+                        <h4 className="complaint-title">{complaint.complaintTitle}</h4>
+                        <p className="complaint-id">Complaint ID: #{complaint.id}</p>
                       </div>
-                      <p className="complaint-description">
-                        {complaint.description}
-                      </p>
-                      <div className="complaint-footer">
-                        <p><strong>Category:</strong> {complaint.category}</p>
-                        <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
-                        <p><strong>Priority:</strong> {complaint.priority}</p>
-                        <div className="feedback-section">
-                          <h4>Feedback:</h4>
-                          {complaint.feedback && complaint.feedback.length > 0 ? (
-                            complaint.feedback.map((feedback, index) => (
-                              <div key={index} className="feedback-item">
-                                <p><strong>{feedback.adminName}:</strong> {feedback.feedback}</p>
-                                <p><small>{new Date(feedback.timestamp).toLocaleString()}</small></p>
-                              </div>
-                            ))
-                          ) : (
-                            <p>No feedback yet.</p>
-                          )}
-                        </div>
-                      </div>
+                      <span className={`status-badge ${complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'}`}>
+  {complaint.status}
+</span>
+
                     </div>
-                  ))
-                ) : (
-                  <p>No active complaints found.</p>
-                )}
+                    <p className="complaint-description">{complaint.description}</p>
+                    <div className="complaint-footer">
+  <div className="complaint-footer-info">
+    <p><strong>Category:</strong> {complaint.category}</p>
+    <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
+    <p><strong>Priority: </strong>
+      <span className="priority-badge"
+        style={{
+          backgroundColor:
+            complaint.priority.toLowerCase() === 'high'
+              ? '#dc2626'
+              : complaint.priority.toLowerCase() === 'medium'
+              ? '#f97316'
+              : '#059669',
+          color: '#fff',
+        }}
+      >
+        {complaint.priority}
+      </span>
+    </p>
+  </div>
+
+  {/* Feedback Toggle Button */}
+  <div className="feedback-button-container">
+    <button
+      className="feedback-toggle-button"
+      onClick={() => toggleFeedbackVisibility(complaint.id)}
+    >
+      {complaint.showFeedback ? 'Hide Feedback' : `View Feedback (${complaint.feedback?.length || 0})`}
+    </button>
+  </div>
+</div>
+
+
+                    {/* Feedback Section */}
+                    {complaint.showFeedback && (
+                      <div className="feedback-section">
+                        <h4>Feedback:</h4>
+                        {complaint.feedback && complaint.feedback.length > 0 ? (
+                          complaint.feedback.map((feedback, index) => (
+                            <div key={index} className="feedback-item">
+                              <p><strong>{feedback.adminName}:</strong> {feedback.feedback}</p>
+                              <p><small>{new Date(feedback.timestamp).toLocaleString()}</small></p>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No feedback yet.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
-          </div>
+            ) : (
+              <p>No active complaints found.</p>
+            )}
+          </section>
         </main>
       </div>
     </div>
