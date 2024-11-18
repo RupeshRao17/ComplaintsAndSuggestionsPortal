@@ -134,43 +134,43 @@ const StudentDashboard = () => {
                         <p className="complaint-id">Complaint ID: #{complaint.id}</p>
                       </div>
                       <span className={`status-badge ${complaint.status.toLowerCase() === 'resolved' ? 'status-resolved' : 'status-unresolved'}`}>
-  {complaint.status}
-</span>
-
+                        {complaint.status}
+                      </span>
                     </div>
                     <p className="complaint-description">{complaint.description}</p>
                     <div className="complaint-footer">
-  <div className="complaint-footer-info">
-    <p><strong>Category:</strong> {complaint.category}</p>
-    <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
-    <p><strong>Priority: </strong>
-      <span className="priority-badge"
-        style={{
-          backgroundColor:
-            complaint.priority.toLowerCase() === 'high'
-              ? '#dc2626'
-              : complaint.priority.toLowerCase() === 'medium'
-              ? '#f97316'
-              : '#059669',
-          color: '#fff',
-        }}
-      >
-        {complaint.priority}
-      </span>
-    </p>
-  </div>
+                      <div className="complaint-footer-info">
+                        <p><strong>Category:</strong> {complaint.category}</p>
+                        <p><strong>Submitted On:</strong> {new Date(complaint.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                        <p><strong>Priority: </strong>
+                          <span className="priority-badge"
+                            style={{
+                              backgroundColor:
+                                complaint.priority.toLowerCase() === 'high'
+                                  ? '#dc2626'
+                                  : complaint.priority.toLowerCase() === 'medium'
+                                  ? '#f97316'
+                                  : '#059669',
+                              color: '#fff',
+                            }}
+                          >
+                            {complaint.priority}
+                          </span>
+                        </p>
+                      </div>
 
-  {/* Feedback Toggle Button */}
-  <div className="feedback-button-container">
-    <button
-      className="feedback-toggle-button"
-      onClick={() => toggleFeedbackVisibility(complaint.id)}
-    >
-      {complaint.showFeedback ? 'Hide Feedback' : `View Feedback (${complaint.feedback?.length || 0})`}
-    </button>
-  </div>
-</div>
-
+                      {/* Feedback Toggle Button */}
+                      {complaint.feedback && complaint.feedback.length > 0 && (
+                        <div className="feedback-button-container">
+                          <button
+                            className="feedback-toggle-button"
+                            onClick={() => toggleFeedbackVisibility(complaint.id)}
+                          >
+                            {complaint.showFeedback ? 'Hide Feedback' : `View Feedback (${complaint.feedback.length})`}
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Feedback Section */}
                     {complaint.showFeedback && (
