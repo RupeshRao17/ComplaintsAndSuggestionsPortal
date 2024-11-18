@@ -9,7 +9,6 @@
 /* Header Styles */
 .dashboard-header {
   width: 100%;
-  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 0.2);
   border-bottom: 3px solid rgb(255, 208, 0);
@@ -22,29 +21,6 @@
   justify-content: space-between;
   max-width: 2200px;
   margin: 0 auto;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.menu-button {
-  padding: 0.5rem;
-  background: none;
-  border: none;
-  color: #000080;
-  cursor: pointer;
-  border-radius: 0.5rem;
-}
-
-.menu-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.menu-icon {
-  width: 1.5rem;
-  height: 1.5rem;
 }
 
 .dashboard-title {
@@ -214,52 +190,20 @@
   gap: 1rem; /* Space between complaint details and feedback button */
 }
 
-.complaint-details {
-  display: flex;
-  flex-direction: row; /* Arrange items in a horizontal line */
-  gap: 2rem; /* Space between each item in the row */
-  align-items: center; /* Align items vertically to the center */
-}
-
 .complaint-footer-info {
-  display: flex; /* Arrange items in a row */
+  display: flex;
   flex-direction: row; /* Horizontal alignment */
-  justify-content: flex-start; /* Align items to the left */
-  align-items: center; /* Vertically center the text */
+  justify-content: flex-start;
   gap: 2rem; /* Add spacing between each item */
 }
 
 .feedback-button-container {
   display: flex;
-  flex-direction: column; /* Stack feedback button vertically */
-  gap: 1rem; /* Space between feedback button and other footer items */
-  align-items: flex-start; /* Align items to the left */
+  justify-content: center; /* Center the button */
+  width: 100%;
+  margin-top: 10px;
 }
 
-.complaint-footer-info p {
-  margin: 0;
-  text-align: left; /* Align text to the left */
-  white-space: nowrap; /* Prevent wrapping */
-}
-
-.priority-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: white;
-}
-
-.feedback-button-container {
-  display: flex;
-  flex-direction: column; /* Stack feedback button vertically */
-  gap: 1rem; /* Space between feedback button and other footer items */
-}
-
-.feedback-title {
-  color: #000080;
-}
-
-/* Feedback Button */
 .feedback-toggle-button {
   padding: 0.5rem 1rem;
   background-color: #000080;
@@ -283,6 +227,33 @@
   border-radius: 0.5rem;
   font-weight: 500;
   text-align: center;
+}
+
+/* Feedback section positioning */
+.feedback-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Make it as wide as the card */
+  padding: 10px;
+  border-top: 2px solid #ddd;
+  margin-top: 10px;
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-item {
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.feedback-item p {
+  margin: 5px 0;
 }
 
 /* Priority Badge Color */
@@ -311,10 +282,7 @@
   }
 
   .complaint-footer {
-    gap: 1rem;
-  }
-
-  .feedback-button-container {
-    flex-direction: column; /* Stack feedback button vertically */
+    display: flex;
+    flex-direction: column;
   }
 }

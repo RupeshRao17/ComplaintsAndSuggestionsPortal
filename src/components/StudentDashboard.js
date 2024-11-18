@@ -159,8 +159,7 @@ const StudentDashboard = () => {
                         </p>
                       </div>
 
-                      {/* Feedback Toggle Button */}
-                      {complaint.feedback && complaint.feedback.length > 0 && (
+                      {complaint.feedback && complaint.feedback.length > 0 ? (
                         <div className="feedback-button-container">
                           <button
                             className="feedback-toggle-button"
@@ -169,25 +168,31 @@ const StudentDashboard = () => {
                             {complaint.showFeedback ? 'Hide Feedback' : `View Feedback (${complaint.feedback.length})`}
                           </button>
                         </div>
+                      ) : (
+                        <div className="no-feedback-button-container">
+                          <button
+                            className="no-feedback-button"
+                            onClick={() => alert('No feedback available yet.')}
+                          >
+                            No feedback available yet.
+                          </button>
+                        </div>
+                      )}
+
+                      {complaint.showFeedback && complaint.feedback.length > 0 && (
+                        <div className="feedback-section">
+                          <h4>Feedback:</h4>
+                          <div className="feedback-content">
+                            {complaint.feedback.map((feedback, index) => (
+                              <div key={index} className="feedback-item">
+                                <p><strong>{feedback.adminName}:</strong> {feedback.feedback}</p>
+                                <p><small>{new Date(feedback.timestamp).toLocaleString()}</small></p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </div>
-
-                    {/* Feedback Section */}
-                    {complaint.showFeedback && (
-                      <div className="feedback-section">
-                        <h4>Feedback:</h4>
-                        {complaint.feedback && complaint.feedback.length > 0 ? (
-                          complaint.feedback.map((feedback, index) => (
-                            <div key={index} className="feedback-item">
-                              <p><strong>{feedback.adminName}:</strong> {feedback.feedback}</p>
-                              <p><small>{new Date(feedback.timestamp).toLocaleString()}</small></p>
-                            </div>
-                          ))
-                        ) : (
-                          <p>No feedback yet.</p>
-                        )}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
