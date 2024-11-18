@@ -22,6 +22,36 @@ const AdminDashboard = () => {
   });
   const [selectedComplaintId, setSelectedComplaintId] = useState(null); // Track the complaint for feedback
   const [feedback, setFeedback] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // To manage modal visibility
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const suggestionsCollection = collection(db, 'suggestions');
+        const suggestionSnapshot = await getDocs(suggestionsCollection);
+        const suggestionList = suggestionSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSuggestions(suggestionList);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    };
+  
+    fetchSuggestions();
+  }, []);
+
+  
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  
 
   // Fetch admin details
   useEffect(() => {
@@ -272,7 +302,29 @@ const AdminDashboard = () => {
         </div>
 
         <div className="complaints-section">
+        <div className="complaints-header">
           <h2>Complaints</h2>
+          <button className="show-suggestions-button" onClick={handleOpenModal}>Show Suggestions</button>
+          </div>
+          {isModalOpen && (
+    <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>Suggestions</h2>
+      <div className="suggestions-container">
+        {suggestions.map((suggestion) => (
+          <div key={suggestion.id} className="suggestion-card">
+            <h3>{suggestion.suggestionTitle}</h3>
+            <p><strong>Description:</strong> {suggestion.description}</p>
+            <p><strong>Submitted by:</strong> {suggestion.fullName} - {suggestion.role} - {suggestion.department}</p>
+            <p><strong>Email:</strong> {suggestion.email}</p> 
+            <p><strong>Submited At:</strong> {new Date(suggestion.createdAt.seconds * 1000).toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+      <button onClick={handleCloseModal}>Close</button>
+    </div>
+  </div>
+)}
           <table className="complaints-table">
             <tbody>
               {filteredComplaints.map((complaint) => (
