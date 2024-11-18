@@ -151,12 +151,3 @@
   .submit-suggestion-agreement-label input {
     margin-right: 10px;
   }
-  select {
-    width: 92%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: white;
-  }
-  

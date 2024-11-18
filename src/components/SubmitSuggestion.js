@@ -6,9 +6,6 @@ import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import collegeLogo from './logo_campus.png';
 import Modal from './Modal';
 
-const roles = ['Student', 'Faculty', 'Staff', 'Visitor'];
-const departments = ['Computer Science', 'Mechanical Engineering', 'Electronics', 'Civil Engineering', 'Electrical Engineering'];
-
 const SubmitSuggestion = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
@@ -38,6 +35,8 @@ const SubmitSuggestion = () => {
             const userData = userDoc.data();
             setFullName(userData.name || '');
             setPhone(userData.contactNumber || '');
+            setRole(userData.userType || '');
+            setDepartment(userData.department || '');
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -137,35 +136,21 @@ const SubmitSuggestion = () => {
               />
             </label>
             <label>
-              Role/Profession:
-              <select
+              User Type:
+              <input
+                type="text"
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-              >
-                <option value="">Select a Role</option>
-                {roles.map((roleOption, index) => (
-                  <option key={index} value={roleOption}>
-                    {roleOption}
-                  </option>
-                ))}
-              </select>
-            </label>
+                disabled
+              />
+              </label>
             <label>
-              Department Name:
-              <select
+              Department:
+              <input
+                type="text"
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                required
-              >
-                <option value="">Select a Department</option>
-                {departments.map((departmentOption, index) => (
-                  <option key={index} value={departmentOption}>
-                    {departmentOption}
-                  </option>
-                ))}
-              </select>
-            </label>
+                disabled
+              />
+              </label>
           </fieldset>
 
           <fieldset>

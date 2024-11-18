@@ -23,10 +23,6 @@ const RegisterComplaint = () => {
   const [showModal, setShowModal] = useState(false);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
 
-  // List of roles and departments
-  const roles = ['Student', 'Faculty', 'Staff', 'Visitor'];
-  const departments = ['Computer Science', 'Mechanical Engineering', 'Electronics', 'Civil Engineering', 'Electrical Engineering'];
-
   // Fetch user details (including name and phone) from Firebase on auth state change
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -40,6 +36,8 @@ const RegisterComplaint = () => {
             const userData = docSnap.data();
             setFullName(userData.name || ''); // Prefill name from Firestore
             setPhone(userData.contactNumber || ''); // Prefill phone number from Firestore
+            setRole(userData.userType || '');
+            setDepartment(userData.department || '');
           }
         });
       }
@@ -140,35 +138,21 @@ const RegisterComplaint = () => {
               />
             </label>
             <label>
-              Role/Profession:
-              <select
+              User Type:
+              <input
+                type="text"
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-              >
-                <option value="">Select a Role</option>
-                {roles.map((roleOption, index) => (
-                  <option key={index} value={roleOption}>
-                    {roleOption}
-                  </option>
-                ))}
-              </select>
-            </label>
+                disabled
+              />
+              </label>
             <label>
-              Department Name:
-              <select
+              Department:
+              <input
+                type="text"
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                required
-              >
-                <option value="">Select a Department</option>
-                {departments.map((departmentOption, index) => (
-                  <option key={index} value={departmentOption}>
-                    {departmentOption}
-                  </option>
-                ))}
-              </select>
-            </label>
+                disabled
+              />
+              </label>
           </fieldset>
 
           <fieldset>
