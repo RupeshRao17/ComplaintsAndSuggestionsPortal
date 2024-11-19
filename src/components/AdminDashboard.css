@@ -502,6 +502,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000; /* Ensure the modal is above other content */
 }
 
 .modal-content {
@@ -513,6 +514,18 @@
   max-height: 80%;
   overflow-y: auto;
 }
+
+
+.modal-overlay.active {
+  display: flex; /* Show modal overlay when active */
+  opacity: 1; /* Fully visible */
+}
+
+.modal-content.active {
+  transform: translateY(0); /* Bring modal into view */
+}
+
+
 
 .suggestions-container {
   display: flex;
@@ -538,3 +551,53 @@
   margin: 5px 0;
 }
 
+/* Center the tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.tab-button {
+  margin: 0 10px;
+  padding: 5px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #000000;
+  cursor: pointer;
+  font-size: 0.8rem; /* Smaller font size */
+}
+
+.tab-button.inactive {
+  background-color: #ccc;
+  color: #000000;
+  border: 1 px solid black;
+  border-color: #000000;
+}
+
+/* Center the Close Button */
+.close-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.close-button {
+  padding: 5px 10px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem; /* Smaller button size */
+}
+
+/* Style for "Mark as Read/Unread" button */
+.status-toggle-button {
+  font-size: 0.8rem; /* Smaller font size */
+  padding: 5px 10px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.status-toggle-button:hover {
+  background-color: #1e40af;
+}

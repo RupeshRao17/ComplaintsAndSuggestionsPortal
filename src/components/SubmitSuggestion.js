@@ -68,6 +68,7 @@ const SubmitSuggestion = () => {
         suggestionTitle,
         description,
         category,
+        status: "unread",
         createdAt: new Date(),
       });
       setModalMessage("Suggestion submitted successfully!");

@@ -24,6 +24,8 @@ const AdminDashboard = () => {
   const [feedback, setFeedback] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // To manage modal visibility
+  const [activeTab, setActiveTab] = useState('unread');
+  const filteredSuggestions = suggestions.filter((suggestion) => suggestion.status === activeTab);  
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -43,14 +45,33 @@ const AdminDashboard = () => {
     fetchSuggestions();
   }, []);
 
-  
-  const handleOpenModal = () => {
+
+
+  // Function to handle opening the modal
+  const openModal = () => {
     setIsModalOpen(true);
   };
-  
-  const handleCloseModal = () => {
+
+  // Function to handle closing the modal
+  const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  const handleToggleSuggestionStatus = async (suggestionId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === 'unread' ? 'read' : 'unread';
+      const suggestionRef = doc(db, 'suggestions', suggestionId);
+      await updateDoc(suggestionRef, { status: newStatus });
+      setSuggestions((prevSuggestions) =>
+        prevSuggestions.map((sug) =>
+          sug.id === suggestionId ? { ...sug, status: newStatus } : sug
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling suggestion status:', error);
+    }
+  };
+
   
 
   // Fetch admin details
@@ -304,27 +325,60 @@ const AdminDashboard = () => {
         <div className="complaints-section">
         <div className="complaints-header">
           <h2>Complaints</h2>
-          <button className="show-suggestions-button" onClick={handleOpenModal}>Show Suggestions</button>
-          </div>
-          {isModalOpen && (
-    <div className="modal-overlay">
+          <button className="show-suggestions-button" onClick={openModal}>Show Suggestion </button>
+                          </div>
+{/* Modal for Suggestions */}
+{isModalOpen && (
+  <div className="modal-overlay">
     <div className="modal-content">
       <h2>Suggestions</h2>
-      <div className="suggestions-container">
-        {suggestions.map((suggestion) => (
-          <div key={suggestion.id} className="suggestion-card">
-            <h3>{suggestion.suggestionTitle}</h3>
-            <p><strong>Description:</strong> {suggestion.description}</p>
-            <p><strong>Submitted by:</strong> {suggestion.fullName} - {suggestion.role} - {suggestion.department}</p>
-            <p><strong>Email:</strong> {suggestion.email}</p> 
-            <p><strong>Submited At:</strong> {new Date(suggestion.createdAt.seconds * 1000).toLocaleString()}</p>
-          </div>
-        ))}
+      <div className="tabs">  
+        <button
+          className={`tab-button ${activeTab === 'unread' ? 'active' : 'inactive'}`}
+          onClick={() => setActiveTab('unread')}
+        >
+          Unread
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'read' ? 'active' : 'inactive'}`}
+          onClick={() => setActiveTab('read')}
+        >
+          Read
+        </button>
       </div>
-      <button onClick={handleCloseModal}>Close</button>
+      <div className="suggestion-container">
+        {filteredSuggestions.length > 0 ? (
+          filteredSuggestions.map((suggestion) => (
+            <div key={suggestion.id} className="suggestion-card">
+             <h3>{suggestion.suggestionTitle}</h3>
+              <p><strong>Description:</strong> {suggestion.description}</p>
+              <p><strong>Submitted By:</strong> {suggestion.fullName} - {suggestion.role} - {suggestion.department}</p>
+              <p><strong>Email:</strong> {suggestion.email}</p>
+              <p><strong>Submitted At:</strong> {new Date(suggestion.createdAt.seconds * 1000).toLocaleString()}</p>
+              <p>
+                <strong>Status:</strong> {suggestion.status.toUpperCase()}
+                <button
+                  className="status-toggle-button"
+                  onClick={() =>
+                    handleToggleSuggestionStatus(suggestion.id, suggestion.status)
+                  }
+                >
+                  Mark as {suggestion.status === 'unread' ? 'Read' : 'Unread'}
+                </button>
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>No suggestions in this category.</p>
+        )}
+      </div>
+      <button className="close-button" onClick={closeModal}>
+        Close
+      </button>
     </div>
   </div>
 )}
+
           <table className="complaints-table">
             <tbody>
               {filteredComplaints.map((complaint) => (
